@@ -19,6 +19,11 @@ def initSettings():
     global globalSettings
     globalSettings = defaultSettings.copy()
 
+def checkSettingsExist():
+    currDir = os.path.dirname(os.path.abspath(__file__))
+    parentDir = os.path.abspath(os.path.join(currDir, os.pardir))
+    return os.path.exists(parentDir + "/data/settings.json")
+
 def writeFile():
     currDir = os.path.dirname(os.path.abspath(__file__))
     parentDir = os.path.abspath(os.path.join(currDir, os.pardir))
@@ -27,9 +32,19 @@ def writeFile():
         json.dump(globalSettings,f,indent=2,ensure_ascii=False)
         f.close()
 
+def loadSettings():
+    if checkSettingsExist():
+        pass
+    currDir = os.path.dirname(os.path.abspath(__file__))
+    parentDir = os.path.abspath(os.path.join(currDir, os.pardir))
+    
+    with open(parentDir + "/data/settings.json", 'r') as f:
+        global globalSettings
+        globalSettings = json.load(f)
+        f.close()
+
 def main():
-    initSettings()
-    writeFile()
+
     
 if __name__ == "__main__":
     main()
