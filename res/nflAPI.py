@@ -14,6 +14,7 @@ def writeData():
     data = response.json()
     currDate = datetime.datetime.timestamp(datetime.datetime.now())
 	
+    # TODO: Check the settings file for the path to the playerList.json file
     jsonFile = open("playerList.json", "w")
 
 	# Add a field to see when the last time that the file was updated
@@ -45,4 +46,3 @@ def main():
     
 if __name__ == "__main__":
     main()
-    input()
