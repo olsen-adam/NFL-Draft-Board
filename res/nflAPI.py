@@ -1,4 +1,5 @@
 import requests, json, datetime
+import settings
 
 DEBUG = False
 
@@ -15,7 +16,8 @@ def writeData():
     currDate = datetime.datetime.timestamp(datetime.datetime.now())
 	
     # TODO: Check the settings file for the path to the playerList.json file
-    jsonFile = open("playerList.json", "w")
+    fileLocation = settings.loadRootPath() + settings.loadSetting("pathToPlayerList")
+    jsonFile = open(fileLocation, "w")
 
 	# Add a field to see when the last time that the file was updated
     data["currdate"] = currDate
@@ -27,7 +29,8 @@ def checkFile(seconds=0, minutes=0, hours=12):
     dataNeedsRefreshing = False
     totalSeconds = (hours*60*60) + (minutes*60) + seconds
     try:
-        with open('playerList.json') as json_file:
+        fileLocation = settings.loadRootPath() + settings.loadSetting("pathToPlayerList")
+        with open(fileLocation,"r") as json_file:
             data = json.load(json_file)
             oldDate = data["currdate"]
             diff = abs((datetime.datetime.fromtimestamp(oldDate) - datetime.datetime.now()).total_seconds())

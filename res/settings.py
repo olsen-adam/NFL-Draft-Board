@@ -78,6 +78,17 @@ def loadSetting(settingName: str):
             print(f"Error with loading the setting \"{settingName}\", {e}")
             return None
 
+def loadRootPath():
+    """Loads the root path of the project.
+
+    Returns:
+        str: The root path of the project
+    """
+    
+    currDir = os.path.dirname(os.path.abspath(__file__))
+    parentDir = os.path.abspath(os.path.join(currDir, os.pardir))
+    return parentDir
+
 def loadAllSettings():
     """Load all settings from the settings file.
 
