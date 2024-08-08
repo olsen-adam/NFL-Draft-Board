@@ -12,6 +12,7 @@ def getDefaultSettings():
         # UI Settings
         "theme": "light",
         "uiScaling": 1.0,
+        "isFullscreen": False,
         # File Path Settings
         "pathToPlayerList": "/data/playerList.json",
         # Timer Settings
