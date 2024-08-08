@@ -10,9 +10,11 @@ def getDefaultSettings():
     global defaultSettings
     defaultSettings = {
         # UI Settings
-        "theme": "light",
+        "theme": "dark",
         "uiScaling": 1.0,
-        "isFullscreen": False,
+        "isFullscreen": True,
+        "lastWidth": 700,
+        "lastHeight": 500,
         # File Path Settings
         "pathToPlayerList": "/data/playerList.json",
         # Timer Settings
