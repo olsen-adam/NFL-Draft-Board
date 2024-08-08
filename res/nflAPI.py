@@ -1,10 +1,12 @@
 import requests, json, datetime
-import settings
+from .settings import *
 
 DEBUG = False
 
 def writeData():
-    print("Retriving Data...")
+    """Writes the data from the NFL API to a json file. It will also add a field to the json file to keep track of when the file was last updated.
+    """
+    if DEBUG: print("Retriving Data...")
     url = "https://tank01-nfl-live-in-game-real-time-statistics-nfl.p.rapidapi.com/getNFLPlayerList"
     headers = {
      	"x-rapidapi-key": "a2fb693d31msh972917021b87f4bp13ce74jsn44791cd6dd35",
@@ -16,7 +18,7 @@ def writeData():
     currDate = datetime.datetime.timestamp(datetime.datetime.now())
 	
     # TODO: Check the settings file for the path to the playerList.json file
-    fileLocation = settings.loadRootPath() + settings.loadSetting("pathToPlayerList")
+    fileLocation = loadRootPath() + loadSetting("pathToPlayerList")
     jsonFile = open(fileLocation, "w")
 
 	# Add a field to see when the last time that the file was updated
@@ -24,12 +26,23 @@ def writeData():
 
     json.dump(data, jsonFile, ensure_ascii=False, indent=4)
     jsonFile.close()
+    print("Data has been written to the file sucessfully.")
 
 def checkFile(seconds=0, minutes=0, hours=12):
+    """Using the timestamp from the json file, this function will check if the file is older than the specified time. If it is, it will return True, otherwise it will return False.
+
+    Args:
+        seconds (int, optional): The seconds value before the file needs refreshing. Defaults to 0.
+        minutes (int, optional): The minutes value before the file needs refreshing. Defaults to 0.
+        hours (int, optional): The hours value before the file needs refreshing. Defaults to 12.
+
+    Returns:
+        Boolean: If the file needs refreshing, it will return True, otherwise it will return False.
+    """
     dataNeedsRefreshing = False
     totalSeconds = (hours*60*60) + (minutes*60) + seconds
     try:
-        fileLocation = settings.loadRootPath() + settings.loadSetting("pathToPlayerList")
+        fileLocation = loadRootPath() + loadSetting("pathToPlayerList")
         with open(fileLocation,"r") as json_file:
             data = json.load(json_file)
             oldDate = data["currdate"]
@@ -41,6 +54,13 @@ def checkFile(seconds=0, minutes=0, hours=12):
     return dataNeedsRefreshing
 
 def refreshAPI(seconds=0, minutes=0, hours=12):
+    """Check if the file needs refreshing. If it does, it will write the data to the json file.
+
+    Args:
+        seconds (int, optional): The amount of seconds between JSON updates. Defaults to 0.
+        minutes (int, optional): The amount of minutes between JSON updates. Defaults to 0.
+        hours (int, optional): The amount of hours between JSON updates. Defaults to 12.
+    """
     if checkFile(seconds,minutes,hours): writeData()
 
 def main():
