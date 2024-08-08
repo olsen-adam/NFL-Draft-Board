@@ -18,7 +18,7 @@ class App(ctk.CTk):
         
         self.screenWidth = self.winfo_screenwidth()
         self.screenHeight = self.winfo_screenheight()
-        self.geometry(f"{self.settings.loadSetting("lastWidth")}x{self.settings.loadSetting("lastHeight")}+0+0")
+        self.geometry(f"{self.settings.loadSetting("lastWidth")}x{self.settings.loadSetting("lastHeight")}+{self.settings.loadSetting('lastX')}+{self.settings.loadSetting('lastY')}")
         
         self.title("NFL Draft Board")
         self.bind("<F11>", self.toggleFullScreen)
@@ -26,6 +26,7 @@ class App(ctk.CTk):
         self.exitJob = None
         self.bind("<KeyPress-Escape>", self.onClosePress)
         self.bind("<KeyRelease-Escape>", self.onCloseRelease)
+        self.protocol("WM_DELETE_WINDOW", self.exit)
         
         self.createMainMenuButtons()
 
@@ -40,6 +41,8 @@ class App(ctk.CTk):
     def exit(self): 
         self.settings.setSetting("lastWidth", self.winfo_width())
         self.settings.setSetting("lastHeight", self.winfo_height())
+        self.settings.setSetting("lastX", max(0,self.winfo_x()))
+        self.settings.setSetting("lastY", max(0,self.winfo_y()))
         self.destroy()
     def onClosePress(self, *args): self.exitJob = self.after(1500, self.exit)
     def onCloseRelease(self, *args):

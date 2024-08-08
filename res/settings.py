@@ -15,6 +15,8 @@ def getDefaultSettings():
         "isFullscreen": True,
         "lastWidth": 700,
         "lastHeight": 500,
+        "lastX": 0,
+        "lastY": 0,
         # File Path Settings
         "pathToPlayerList": "/data/playerList.json",
         # Timer Settings
