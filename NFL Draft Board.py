@@ -1,5 +1,5 @@
 from res.nflAPI import refreshAPI
-import res.settings as settingsModule
+import res.Settings as SettingsModule
 import customtkinter as ctk
 from customtkinter import CTkFont as ctkFont
 
@@ -9,16 +9,16 @@ class App(ctk.CTk):
         self.updateAPI()
         
         
-        self.settings = settingsModule
-        # Set the appearance mode based on settings
-        ctk.set_appearance_mode(self.settings.loadSetting("theme"))
+        self.Settings = SettingsModule
+        # Set the appearance mode based on Settings
+        ctk.set_appearance_mode(self.Settings.loadSetting("theme"))
         
-        self.isFullScreen = self.settings.loadSetting("isFullscreen")
+        self.isFullScreen = self.Settings.loadSetting("isFullscreen")
         self.attributes("-fullscreen", self.isFullScreen)
         
         self.screenWidth = self.winfo_screenwidth()
         self.screenHeight = self.winfo_screenheight()
-        self.geometry(f"{self.settings.loadSetting("lastWidth")}x{self.settings.loadSetting("lastHeight")}+{self.settings.loadSetting('lastX')}+{self.settings.loadSetting('lastY')}")
+        self.geometry(f"{self.Settings.loadSetting("lastWidth")}x{self.Settings.loadSetting("lastHeight")}+{self.Settings.loadSetting('lastX')}+{self.Settings.loadSetting('lastY')}")
         
         self.title("NFL Draft Board")
         self.bind("<F11>", self.toggleFullScreen)
@@ -31,7 +31,7 @@ class App(ctk.CTk):
         self.createMainMenuButtons()
 
     def createMainMenuButtons(self):
-        uiScaling = round(self.settings.loadSetting("uiScaling"))
+        uiScaling = round(self.Settings.loadSetting("uiScaling"))
         exitFont = ctkFont(family="Helvetica", size=35 * uiScaling, weight="bold")
         exitPadY = self.screenHeight // 10
         
@@ -39,10 +39,10 @@ class App(ctk.CTk):
         self.exitButton.pack(side="bottom",pady=exitPadY)
 
     def exit(self): 
-        self.settings.setSetting("lastWidth", self.winfo_width())
-        self.settings.setSetting("lastHeight", self.winfo_height())
-        self.settings.setSetting("lastX", max(0,self.winfo_x()))
-        self.settings.setSetting("lastY", max(0,self.winfo_y()))
+        self.Settings.setSetting("lastWidth", self.winfo_width())
+        self.Settings.setSetting("lastHeight", self.winfo_height())
+        self.Settings.setSetting("lastX", max(0,self.winfo_x()))
+        self.Settings.setSetting("lastY", max(0,self.winfo_y()))
         self.destroy()
     def onClosePress(self, *args): self.exitJob = self.after(1500, self.exit)
     def onCloseRelease(self, *args):
@@ -53,7 +53,7 @@ class App(ctk.CTk):
         refreshAPI()
     def toggleFullScreen(self, *args):
         self.isFullScreen = not self.isFullScreen
-        self.settings.setSetting("isFullscreen", self.isFullScreen)
+        self.Settings.setSetting("isFullscreen", self.isFullScreen)
         self.attributes("-fullscreen", self.isFullScreen)
 
 def main():

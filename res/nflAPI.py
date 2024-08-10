@@ -1,5 +1,5 @@
 import requests, json, datetime
-from .settings import *
+from .Settings import *
 
 DEBUG = False
 
