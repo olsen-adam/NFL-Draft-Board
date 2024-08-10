@@ -14,6 +14,11 @@ class Player:
             self.photo = PIL.Image.open(parentDir + "/data/missing.jpg")
         
     def getHeadshotTransparent(self):
+        """getHeadshotTransparent - Get the headshot of the player with a transparent background
+
+        Returns:
+            Image: Image from ESPN with a transparent background, None if failed to load
+        """
         response = requests.get(self.espnHeadshot)
         try:
             if response.status_code == 200:
