@@ -46,21 +46,4 @@ class Player:
         num3 = max(((num1 * num2) % 255),minVal)
         hex3 = str(hex(num3)).lstrip("0x")
         
-        return ("#%s%s%s" % (hex1,hex2,hex3))
-
-def main():
-    with open("playerList.json", "r") as f:
-        data = json.load(f)
-        f.close()
-        
-    playerList = []
-        
-    for player in data["body"]:
-        player = Player(player)
-        playerList.append(player)
-    
-    for player in playerList:
-        print(f"{player.name:25} | {player.position:2} | hex: {player.setColour()}")
-    
-if __name__ == "__main__":
-    main()
+        return ("#%s%s%s" % (hex1,hex2,hex3)).upper()
