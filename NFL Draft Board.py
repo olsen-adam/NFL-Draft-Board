@@ -1,4 +1,4 @@
-from res.nflAPI import refreshAPI
+from res.NflAPI import refreshAPI
 import res.Settings as SettingsModule
 import customtkinter as ctk
 from customtkinter import CTkFont as ctkFont
