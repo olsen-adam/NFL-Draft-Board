@@ -16,12 +16,30 @@ class MainMenu(ctk.CTkFrame):
         self.createMainMenuButtons()
         
     def createMainMenuButtons(self):
-        uiScaling = self.settings.loadSetting("uiScaling")
-        buttonFont = ctkFont(family="Helvetica", size= round(35 * uiScaling), weight="bold")
-        padY = round(15*uiScaling)
+        self.currDir = os.path.dirname(os.path.abspath(__file__))
+        self.parentDir = os.path.abspath(os.path.join(self.currDir, os.pardir))
         
-        self.settingsButton = ctk.CTkButton(self, text="Settings", font=buttonFont)
-        self.settingsButton.grid(row=2,column=0, padx=5, pady=padY, sticky="ew")
+        uiScaling = self.settings.loadSetting("uiScaling")
+        fontSize = round(35 * uiScaling)
+        buttonFont = ctkFont(family="Helvetica", size=fontSize, weight="bold")
+        padY = round(75*uiScaling)
+        padX = round(650*uiScaling)
+        
+        self.grid_rowconfigure(0, weight=1)
+        self.grid_columnconfigure(0, weight=1)
+        
+        self.startButton = ctk.CTkButton(self, text="Start", font=buttonFont, fg_color="green", hover_color="darkgreen", height=fontSize+20)
+        self.startButton.grid(row=0,column=0, padx=padX, pady=padY, sticky="ew")
+        
+        teamsIcon, teamsIconSize = PIL.Image.open(self.currDir + "/data/img/teams.png"), round(35 * uiScaling)
+        self.teamsIcon = ctk.CTkImage(teamsIcon, size=(teamsIconSize, teamsIconSize))
+        self.teamsButton = ctk.CTkButton(self,image=self.teamsIcon, text="Team Setup", font=buttonFont, height=fontSize+20)
+        self.teamsButton.grid(row=1,column=0, padx=padX, pady=padY, sticky="ew")
+        
+        settingsIcon, settingsIconSize = PIL.Image.open(self.currDir + "/data/img/settings.png"), round(35 * uiScaling)
+        self.settingsIcon = ctk.CTkImage(settingsIcon, size=(settingsIconSize, settingsIconSize))
+        self.settingsButton = ctk.CTkButton(self,image=self.settingsIcon, text="Settings", font=buttonFont, height=fontSize+20)
+        self.settingsButton.grid(row=2,column=0, padx=padX, pady=padY, sticky="ew")
 
 class App(ctk.CTk):
     def __init__(self, *args, **kwargs):
@@ -53,7 +71,7 @@ class App(ctk.CTk):
         self.protocol("WM_DELETE_WINDOW", self.exit)
         
         self.mainMenu = MainMenu(self, corner_radius=10)
-        self.mainMenu.grid(row=0,column=1, sticky="nsew",padx=5,pady=5)
+        self.mainMenu.grid(row=0,column=0,columnspan=2, sticky="nsew",padx=5,pady=5)
         
         exitIcon = PIL.Image.open(self.currDir + "/data/img/exit.png")
         buttonSize = 50
