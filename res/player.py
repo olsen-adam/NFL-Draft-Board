@@ -19,7 +19,7 @@ class Player:
             
         currDir = os.path.dirname(os.path.abspath(__file__))
         parentDir = os.path.abspath(os.path.join(currDir, os.pardir))
-        defaultPhoto = PIL.Image.open(parentDir + "/data/missing.jpg")
+        defaultPhoto = PIL.Image.open(parentDir + "/data/img/missing.jpg")
             
         try:
             if response.status_code == 200:

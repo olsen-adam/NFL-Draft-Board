@@ -1,7 +1,9 @@
+import PIL.Image
 from res.NflAPI import refreshAPI
 import res.Settings as settingsModule
 import customtkinter as ctk
 from customtkinter import CTkFont as ctkFont
+import res.Player, os, PIL
 
 class MainMenu(ctk.CTkFrame):
     def __init__(self, *args, **kwargs):
@@ -14,19 +16,12 @@ class MainMenu(ctk.CTkFrame):
         self.createMainMenuButtons()
         
     def createMainMenuButtons(self):
-        uiScaling = round(self.settings.loadSetting("uiScaling"))
-        exitFont = ctkFont(family="Helvetica", size=35 * uiScaling, weight="bold")
-        exitPadY = self.screenHeight // 10
+        uiScaling = self.settings.loadSetting("uiScaling")
+        buttonFont = ctkFont(family="Helvetica", size= round(35 * uiScaling), weight="bold")
+        padY = round(15*uiScaling)
         
-        self.exitButton = ctk.CTkButton(self, text="Exit (Hold Esc)", command=self.exit, font=exitFont)
-        self.exitButton.pack(side="bottom",pady=exitPadY)
-        
-    def exit(self): 
-        self.settings.setSetting("lastWidth", self.winfo_width())
-        self.settings.setSetting("lastHeight", self.winfo_height())
-        self.settings.setSetting("lastX", max(0,self.winfo_x()))
-        self.settings.setSetting("lastY", max(0,self.winfo_y()))
-        self.destroy()
+        self.settingsButton = ctk.CTkButton(self, text="Settings", font=buttonFont)
+        self.settingsButton.grid(row=2,column=0, padx=5, pady=padY, sticky="ew")
 
 class App(ctk.CTk):
     def __init__(self, *args, **kwargs):
@@ -35,12 +30,18 @@ class App(ctk.CTk):
         self.settings = settingsModule
         # Set the appearance mode based on settings
         ctk.set_appearance_mode(self.settings.loadSetting("theme"))
+        self.grid_rowconfigure(0, weight=1)
+        self.grid_columnconfigure(1, weight=1)
         
         self.isFullScreen = self.settings.loadSetting("isFullscreen")
         self.attributes("-fullscreen", self.isFullScreen)
         
+        self.currDir = os.path.dirname(os.path.abspath(__file__))
+        self.parentDir = os.path.abspath(os.path.join(self.currDir, os.pardir))
+        
         self.screenWidth = self.winfo_screenwidth()
         self.screenHeight = self.winfo_screenheight()
+        self.scaling = self.settings.loadSetting("uiScaling")
         self.geometry(f"{self.settings.loadSetting("lastWidth")}x{self.settings.loadSetting("lastHeight")}+{self.settings.loadSetting('lastX')}+{self.settings.loadSetting('lastY')}")
         
         self.title("NFL Draft Board")
@@ -52,8 +53,14 @@ class App(ctk.CTk):
         self.protocol("WM_DELETE_WINDOW", self.exit)
         
         self.mainMenu = MainMenu(self, corner_radius=10)
-        self.mainMenu.pack(expand=True, fill="both", padx=10, pady=self.screenHeight // 4)
-
+        self.mainMenu.grid(row=0,column=1, sticky="nsew",padx=5,pady=5)
+        
+        exitIcon = PIL.Image.open(self.currDir + "/data/img/exit.png")
+        buttonSize = 50
+        tkImage = ctk.CTkImage(exitIcon, size=(round(buttonSize * self.scaling), round(buttonSize * self.scaling)))
+        self.exitButton = ctk.CTkButton(self,image=tkImage,text=None,width=buttonSize,command=self.exit, corner_radius=10, fg_color="red", hover_color="darkred")
+        self.exitButton.grid(row=1,column=0,pady=10,padx=15)
+        
     def exit(self): 
         self.settings.setSetting("lastWidth", self.winfo_width())
         self.settings.setSetting("lastHeight", self.winfo_height())
