@@ -13,8 +13,24 @@ class MainMenu(ctk.CTkFrame):
         self.screenWidth = self.winfo_screenwidth()
         self.screenHeight = self.winfo_screenheight()
         
+        self.teamsFinal = False
+        self.isTeamsCreated()
+
         self.createMainMenuButtons()
-        
+
+    def isTeamsCreated(self,finalTeams=None):
+        if finalTeams != None: self.teamsFinal = finalTeams
+        if not self.teamsFinal:
+            self.startButtonColour = "gray"
+            self.startButtonClickable = "Disabled"
+        else:
+            self.startButtonColour = "green"
+            self.startButtonClickable = "normal"
+
+    def setTeamsCreated(self):
+        self.isTeamsCreated(finalTeams=True)
+        self.startButton.configure(fg_color=self.startButtonColour,state=self.startButtonClickable)
+
     def createMainMenuButtons(self):
         self.currDir = os.path.dirname(os.path.abspath(__file__))
         self.parentDir = os.path.abspath(os.path.join(self.currDir, os.pardir))
@@ -28,12 +44,12 @@ class MainMenu(ctk.CTkFrame):
         self.grid_rowconfigure(0, weight=1)
         self.grid_columnconfigure(0, weight=1)
         
-        self.startButton = ctk.CTkButton(self, text="Start", font=buttonFont, fg_color="green", hover_color="darkgreen", height=fontSize+20)
+        self.startButton = ctk.CTkButton(self, text="Start Draft", font=buttonFont, fg_color=self.startButtonColour, hover_color="darkgreen", height=fontSize+20, state="disabled")
         self.startButton.grid(row=0,column=0, padx=padX, pady=padY, sticky="ew")
         
         teamsIcon, teamsIconSize = PIL.Image.open(self.currDir + "/data/img/teams.png"), round(35 * uiScaling)
         self.teamsIcon = ctk.CTkImage(teamsIcon, size=(teamsIconSize, teamsIconSize))
-        self.teamsButton = ctk.CTkButton(self,image=self.teamsIcon, text="Team Setup", font=buttonFont, height=fontSize+20)
+        self.teamsButton = ctk.CTkButton(self,image=self.teamsIcon, text="Team Setup", font=buttonFont, height=fontSize+20,command=self.setTeamsCreated)
         self.teamsButton.grid(row=1,column=0, padx=padX, pady=padY, sticky="ew")
         
         settingsIcon, settingsIconSize = PIL.Image.open(self.currDir + "/data/img/settings.png"), round(35 * uiScaling)
