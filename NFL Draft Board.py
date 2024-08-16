@@ -12,7 +12,7 @@ class MainMenu(ctk.CTkFrame):
         
         self.screenWidth = self.winfo_screenwidth()
         self.screenHeight = self.winfo_screenheight()
-        
+
         self.teamsFinal = False
         self.isTeamsCreated()
 
@@ -86,14 +86,27 @@ class App(ctk.CTk):
         self.bind("<KeyRelease-Escape>", self.onCloseRelease)
         self.protocol("WM_DELETE_WINDOW", self.exit)
         
-        self.mainMenu = MainMenu(self, corner_radius=10)
-        self.mainMenu.grid(row=0,column=0,columnspan=2, sticky="nsew",padx=5,pady=5)
+        self.container = ctk.CTkFrame(self)
+        self.container.pack(fill="both", expand=True)
         
+        self.frames = {}
+        
+        for F in (MainMenu,):
+            frame = F(self, corner_radius=10)
+            self.frames[F] = frame
+            frame.grid(row=0, column=0, columnspan=2, sticky="nsew")
+                
         exitIcon = PIL.Image.open(self.currDir + "/data/img/exit.png")
         buttonSize = 50
         tkImage = ctk.CTkImage(exitIcon, size=(round(buttonSize * self.scaling), round(buttonSize * self.scaling)))
         self.exitButton = ctk.CTkButton(self,image=tkImage,text=None,width=buttonSize,command=self.exit, corner_radius=10, fg_color="red", hover_color="darkred")
         self.exitButton.grid(row=1,column=0,pady=10,padx=15)
+        
+        self.showFrame(MainMenu)
+    
+    def showFrame(self, frameClass):
+        frame = self.frames[frameClass]
+        frame.tkraise()
         
     def exit(self): 
         self.settings.setSetting("lastWidth", self.winfo_width())
