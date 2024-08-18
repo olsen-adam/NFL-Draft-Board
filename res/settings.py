@@ -11,7 +11,7 @@ def getDefaultSettings():
     defaultSettings = {
         # UI Settings
         "theme": "dark",
-        "uiScaling": 1.0,
+        "uiScaling": 100,
         "isFullscreen": True,
         "lastWidth": 700,
         "lastHeight": 500,

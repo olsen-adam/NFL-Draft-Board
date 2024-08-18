@@ -5,6 +5,37 @@ import customtkinter as ctk
 from customtkinter import CTkFont as ctkFont
 import res.Player, os, PIL
 
+class Settings(ctk.CTkFrame):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        
+    def raisedFrame(self):
+        settings = settingsModule.loadAllSettings()
+        
+        settingNum = 13
+        for i in range(settingNum):
+            self.grid_rowconfigure(i, weight=1)
+        self.grid_columnconfigure(0, weight=1)
+        self.grid_columnconfigure(1, weight=1)
+        self.grid_columnconfigure(2, weight=1)
+        
+        # Theme
+        self.themeLabel = ctk.CTkLabel(self, text="DarkMode", font=ctkFont(size=20,weight="bold"))
+        self.themeSwitch = ctk.CTkSwitch(self)
+        if settings["theme"] == "dark": self.themeSwitch.toggle() 
+        else: self.themeSwitch.detoggle()
+        self.themeDescription = ctk.CTkLabel(self, text="Is the app in dark mode - Default: True", font=ctkFont(size=15))
+        self.themeLabel.grid(row=1,column=0, sticky="e"), self.themeSwitch.grid(row=1,column=1), self.themeDescription.grid(row=1,column=2, sticky="w")
+        
+        # UI Scaling
+        self.uiScalingLabel = ctk.CTkLabel(self, text="UI Scaling", font=ctkFont(size=20,weight="bold"))
+        uiScale = ctk.IntVar()
+        self.uiScalingEntry = ctk.CTkSlider(self, from_=50, to=200, number_of_steps=150,orientation="horizontal", variable=uiScale)
+        self.uiScalingEntry.set(settings["uiScaling"])
+        self.uiScalingValue = ctk.CTkLabel(self, textvariable=uiScale, font=ctkFont(size=15))
+        self.uiScalingDescription = ctk.CTkLabel(self, text="How much the application should scale by - Default: 1.0", font=ctkFont(size=15))
+        self.uiScalingLabel.grid(row=2,column=0, sticky="e"), self.uiScalingEntry.grid(row=2,column=1), self.uiScalingValue.grid(row=2,column=2),self.uiScalingDescription.grid(row=2,column=3, sticky="w")
+
 class MainMenu(ctk.CTkFrame):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -17,6 +48,9 @@ class MainMenu(ctk.CTkFrame):
         self.isTeamsCreated()
 
         self.createMainMenuButtons()
+
+    def raisedFrame(self):
+        pass
 
     def isTeamsCreated(self,finalTeams=None):
         if finalTeams != None: self.teamsFinal = finalTeams
@@ -35,7 +69,7 @@ class MainMenu(ctk.CTkFrame):
         self.currDir = os.path.dirname(os.path.abspath(__file__))
         self.parentDir = os.path.abspath(os.path.join(self.currDir, os.pardir))
         
-        uiScaling = self.settings.loadSetting("uiScaling")
+        uiScaling = self.settings.loadSetting("uiScaling") / 100
         fontSize = round(35 * uiScaling)
         buttonFont = ctkFont(family="Helvetica", size=fontSize, weight="bold")
         padY = round(75*uiScaling)
@@ -54,7 +88,7 @@ class MainMenu(ctk.CTkFrame):
         
         settingsIcon, settingsIconSize = PIL.Image.open(self.currDir + "/data/img/settings.png"), round(35 * uiScaling)
         self.settingsIcon = ctk.CTkImage(settingsIcon, size=(settingsIconSize, settingsIconSize))
-        self.settingsButton = ctk.CTkButton(self,image=self.settingsIcon, text="Settings", font=buttonFont, height=fontSize+20)
+        self.settingsButton = ctk.CTkButton(self,image=self.settingsIcon, text="Settings", font=buttonFont, height=fontSize+20, command=lambda: self.master.showFrame(Settings))
         self.settingsButton.grid(row=2,column=0, padx=padX, pady=padY, sticky="ew")
 
 class App(ctk.CTk):
@@ -75,7 +109,7 @@ class App(ctk.CTk):
         
         self.screenWidth = self.winfo_screenwidth()
         self.screenHeight = self.winfo_screenheight()
-        self.scaling = self.settings.loadSetting("uiScaling")
+        self.scaling = self.settings.loadSetting("uiScaling") / 100
         self.geometry(f"{self.settings.loadSetting("lastWidth")}x{self.settings.loadSetting("lastHeight")}+{self.settings.loadSetting('lastX')}+{self.settings.loadSetting('lastY')}")
         
         self.title("NFL Draft Board")
@@ -87,14 +121,14 @@ class App(ctk.CTk):
         self.protocol("WM_DELETE_WINDOW", self.exit)
         
         self.container = ctk.CTkFrame(self)
-        self.container.pack(fill="both", expand=True)
+        self.container.grid(row=0, column=0, sticky="nsew")
         
         self.frames = {}
         
-        for F in (MainMenu,):
-            frame = F(self, corner_radius=10)
+        for F in (MainMenu,Settings):
+            frame = F(master=self, corner_radius=10)
             self.frames[F] = frame
-            frame.grid(row=0, column=0, columnspan=2, sticky="nsew")
+            frame.grid(row=0, column=0, columnspan=3, sticky="nsew")
                 
         exitIcon = PIL.Image.open(self.currDir + "/data/img/exit.png")
         buttonSize = 50
@@ -107,6 +141,7 @@ class App(ctk.CTk):
     def showFrame(self, frameClass):
         frame = self.frames[frameClass]
         frame.tkraise()
+        frame.raisedFrame()
         
     def exit(self): 
         self.settings.setSetting("lastWidth", self.winfo_width())
