@@ -11,7 +11,7 @@ class Settings(ctk.CTkFrame):
         
     def raisedFrame(self):
         settings = settingsModule.loadAllSettings()
-        
+        appScaling = settings["uiScaling"]
         settingNum = 13
         for i in range(settingNum):
             self.grid_rowconfigure(i, weight=1)
@@ -20,21 +20,20 @@ class Settings(ctk.CTkFrame):
         self.grid_columnconfigure(2, weight=1)
         
         # Theme
-        self.themeLabel = ctk.CTkLabel(self, text="DarkMode", font=ctkFont(size=20,weight="bold"))
-        self.themeSwitch = ctk.CTkSwitch(self)
+        self.themeLabel = ctk.CTkLabel(self, text="DarkMode", font=ctkFont(size=round(25 * appScaling),weight="bold"))
+        self.themeSwitch = ctk.CTkSwitch(self, text="", width=round(appScaling ** 2 * 50), height=round(appScaling ** 2 * 25))
         if settings["theme"] == "dark": self.themeSwitch.toggle() 
         else: self.themeSwitch.detoggle()
         self.themeDescription = ctk.CTkLabel(self, text="Is the app in dark mode - Default: True", font=ctkFont(size=15))
         self.themeLabel.grid(row=1,column=0, sticky="e"), self.themeSwitch.grid(row=1,column=1), self.themeDescription.grid(row=1,column=2, sticky="w")
         
         # UI Scaling
-        self.uiScalingLabel = ctk.CTkLabel(self, text="UI Scaling", font=ctkFont(size=20,weight="bold"))
-        uiScale = ctk.IntVar()
-        self.uiScalingEntry = ctk.CTkSlider(self, from_=50, to=200, number_of_steps=150,orientation="horizontal", variable=uiScale)
-        self.uiScalingEntry.set(settings["uiScaling"])
-        self.uiScalingValue = ctk.CTkLabel(self, textvariable=uiScale, font=ctkFont(size=15))
-        self.uiScalingDescription = ctk.CTkLabel(self, text="How much the application should scale by - Default: 1.0", font=ctkFont(size=15))
-        self.uiScalingLabel.grid(row=2,column=0, sticky="e"), self.uiScalingEntry.grid(row=2,column=1), self.uiScalingValue.grid(row=2,column=2),self.uiScalingDescription.grid(row=2,column=3, sticky="w")
+        self.uiScalingLabel = ctk.CTkLabel(self, text="UI Scaling", font=ctkFont(size=round(25 * appScaling),weight="bold"))
+        uiScale = ctk.DoubleVar()
+        self.uiScalingSlider = ctk.CTkSlider(self, from_=0.5, to=2, number_of_steps=150, orientation="horizontal", variable=uiScale, width=round(appScaling ** 2 * 300))
+        self.uiScalingSlider.set(settings["uiScaling"])
+        self.uiScalingValue = ctk.CTkEntry(self, textvariable=uiScale, width=appScaling ** 2 * 50) 
+        self.uiScalingLabel.grid(row=2,column=0, sticky="e"), self.uiScalingSlider.grid(row=2,column=1), self.uiScalingValue.grid(row=2,column=2,sticky="w")
 
 class MainMenu(ctk.CTkFrame):
     def __init__(self, *args, **kwargs):
@@ -69,7 +68,7 @@ class MainMenu(ctk.CTkFrame):
         self.currDir = os.path.dirname(os.path.abspath(__file__))
         self.parentDir = os.path.abspath(os.path.join(self.currDir, os.pardir))
         
-        uiScaling = self.settings.loadSetting("uiScaling") / 100
+        uiScaling = self.settings.loadSetting("uiScaling")
         fontSize = round(35 * uiScaling)
         buttonFont = ctkFont(family="Helvetica", size=fontSize, weight="bold")
         padY = round(75*uiScaling)
@@ -109,7 +108,7 @@ class App(ctk.CTk):
         
         self.screenWidth = self.winfo_screenwidth()
         self.screenHeight = self.winfo_screenheight()
-        self.scaling = self.settings.loadSetting("uiScaling") / 100
+        self.scaling = self.settings.loadSetting("uiScaling")
         self.geometry(f"{self.settings.loadSetting("lastWidth")}x{self.settings.loadSetting("lastHeight")}+{self.settings.loadSetting('lastX')}+{self.settings.loadSetting('lastY')}")
         
         self.title("NFL Draft Board")
@@ -142,7 +141,6 @@ class App(ctk.CTk):
         frame = self.frames[frameClass]
         frame.tkraise()
         frame.raisedFrame()
-        
     def exit(self): 
         self.settings.setSetting("lastWidth", self.winfo_width())
         self.settings.setSetting("lastHeight", self.winfo_height())
